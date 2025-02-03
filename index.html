@@ -123,7 +123,7 @@
                         <p>${post.summary}</p>
                         <p class="meta">#${post.tags.join(" #")} | 📅 ${post.date} | ⏳ ${post.read_time} | ✍ ${post.author}</p>
                     `;
-                    postDiv.onclick = () => loadPost(post.slug);
+                    postDiv.onclick = () => loadPost(post.slug); // ✅ Fix: Pass correct slug
                     postListContainer.appendChild(postDiv);
                 });
             } catch (error) {
@@ -161,7 +161,9 @@
         }
 
         window.onload = function () {
-            const postSlug = window.location.pathname.split("/posts/")[1];
+            const pathParts = window.location.pathname.split("/posts/");
+            const postSlug = pathParts.length > 1 ? pathParts[1] : null;
+
             if (postSlug) {
                 loadPost(postSlug);
             } else {
