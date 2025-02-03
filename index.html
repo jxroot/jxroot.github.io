@@ -17,6 +17,7 @@
         }
         .container {
             margin-top: 20px;
+            max-width: 900px;
         }
         .post-preview img {
             width: 100%;
@@ -26,6 +27,7 @@
         .full-post img {
             width: 100%;
             border-radius: 8px;
+            margin-bottom: 15px;
         }
         .post-meta {
             font-size: 0.9em;
@@ -107,7 +109,7 @@
 
                 postsData.forEach(post => {
                     const postDiv = document.createElement('div');
-                    postDiv.classList.add('col-md-4', 'mb-4');
+                    postDiv.classList.add('col-md-12', 'mb-4');
 
                     postDiv.innerHTML = `
                         <div class="card bg-dark text-white">
@@ -117,7 +119,7 @@
                                 <p class="post-meta">By ${post.author} | ${post.date} | ${post.read_time} read</p>
                                 <p class="card-text">${post.summary}</p>
                                 <p class="post-meta"><strong>Tags:</strong> ${post.tags.join(', ')}</p>
-                                <a href="#/posts/${post.url}" class="btn btn-primary" onclick="loadPost('${post.url}'); return false;">Read More</a>
+                                <a href="#/posts/${post.url}" class="btn btn-primary" onclick="loadPost('${post.url}', '${post.image}'); return false;">Read More</a>
                             </div>
                         </div>
                     `;
@@ -129,7 +131,7 @@
             }
         }
 
-        async function loadPost(url) {
+        async function loadPost(url, image) {
             try {
                 const response = await fetch(url);
                 if (!response.ok) throw new Error('Failed to load content');
@@ -137,9 +139,8 @@
 
                 const converter = new showdown.Converter({ tables: true, simplifiedAutoLink: true, tasklists: true });
                 let htmlContent = converter.makeHtml(markdown);
+                htmlContent = `<img src="${image}" alt="Post Image">` + htmlContent;
 
-                htmlContent = htmlContent.replace(/<pre><code>/g, '<pre><button class="copy-btn" onclick="copyCode(this)">Copy</button><code>');
-                
                 const postContent = document.getElementById('post-content');
                 postContent.innerHTML = `<h1>${url}</h1>${htmlContent}<br><a href="#" onclick="fetchPostList(); return false;">Back to Posts</a>`;
                 document.getElementById('post-list').style.display = 'none';
@@ -148,14 +149,6 @@
             } catch (error) {
                 console.error('Error loading content:', error);
             }
-        }
-
-        function copyCode(button) {
-            const codeBlock = button.nextElementSibling;
-            navigator.clipboard.writeText(codeBlock.innerText).then(() => {
-                button.textContent = 'Copied!';
-                setTimeout(() => button.textContent = 'Copy', 2000);
-            });
         }
 
         function toggleTheme() {
