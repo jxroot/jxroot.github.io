@@ -39,16 +39,30 @@
             font-size: 1.5em;
         }
         .light-mode {
-            background-color: #f4f4f4;
-            color: #333;
+            background-color: #ffffff;
+            color: #222;
         }
         .light-mode .card {
-            background-color: #ffffff;
+            background-color: #f8f9fa;
             color: #000;
         }
         .light-mode .navbar, .light-mode .footer {
-            background-color: #ddd !important;
-            color: #333 !important;
+            background-color: #e0e0e0 !important;
+            color: #222 !important;
+        }
+        pre {
+            background: #1e1e1e;
+            color: #ffffff;
+            padding: 10px;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+        code {
+            font-family: monospace;
+        }
+        .light-mode pre {
+            background: #f4f4f4;
+            color: #222;
         }
     </style>
 </head>
@@ -111,9 +125,8 @@
                 if (!response.ok) throw new Error('Failed to load content');
                 const markdown = await response.text();
 
-                const converter = new showdown.Converter();
+                const converter = new showdown.Converter({ tables: true, simplifiedAutoLink: true, tasklists: true });
                 const postContent = document.getElementById('post-content');
-
                 postContent.innerHTML = `<h1>${url}</h1>${converter.makeHtml(markdown)}<br><a href="#" onclick="fetchPostList(); return false;">Back to Posts</a>`;
                 document.getElementById('post-list').style.display = 'none';
                 postContent.style.display = 'block';
