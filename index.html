@@ -1,104 +1,50 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@300;400;700&display=swap" rel="stylesheet">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cyber Security Blog</title>
-    <link rel="stylesheet" href="styles.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/showdown/2.1.0/showdown.min.js"></script>
     <style>
         body {
             background-color: #0d0d0d;
             color: #00ffcc;
-            font-family: 'Roboto Mono', monospace;
-            margin: 0;
-            padding: 0;
+            font-family: 'Arial', sans-serif;
         }
-        header {
-            background-color: #1a1a1a;
-            padding: 20px;
-            text-align: center;
-        }
-        nav ul {
-            list-style: none;
-            padding: 0;
-        }
-        nav ul li {
-            display: inline;
-            margin-right: 15px;
-        }
-        nav ul li a {
-            color: #00ffcc;
-            text-decoration: none;
-            font-weight: bold;
-            cursor: pointer;
-        }
-        .post-container {
-            max-width: 800px;
-            margin: 30px auto;
-            padding: 20px;
-            background: #1a1a1a;
-            border-radius: 8px;
-        }
-        .post-preview {
-            background: #222;
-            padding: 15px;
-            margin-bottom: 30px;
-            border-radius: 8px;
-            cursor: pointer;
+        .container {
+            margin-top: 20px;
         }
         .post-preview img {
             width: 100%;
+            height: auto;
             border-radius: 8px;
         }
-        .post-preview h2 {
-            color: #00ffcc;
-        }
-        .post-preview p {
-            color: #ddd;
-        }
-        .post-preview .meta {
-            font-size: 12px;
-            color: #888;
-        }
-        .full-post {
-            display: none;
-            padding: 20px;
-            background: #1a1a1a;
-            border-radius: 8px;
-            max-width: 800px;
-            margin: 30px auto;
-            color: #ddd;
-        }
-        footer {
-            background-color: #1a1a1a;
-            text-align: center;
-            padding: 20px;
-            position: relative;
-            margin-top: 30px;
+        .full-post img {
             width: 100%;
+            border-radius: 8px;
         }
     </style>
 </head>
 <body>
-    <header>
-        <h1>Cyber Security Insights</h1>
-        <nav>
-            <ul>
-                <li><a href="/" onclick="showPostList(); return false;">Home</a></li>
-                <li><a href="/index.html?post=about" onclick="loadPost('about'); return false;">About</a></li>
-                <li><a href="/index.html?post=contact" onclick="loadPost('contact'); return false;">Contact</a></li>
-            </ul>
-        </nav>
-    </header>
+    <nav class="navbar navbar-dark bg-dark navbar-expand-lg">
+        <div class="container">
+            <a class="navbar-brand" href="/" onclick="showPostList(); return false;">Cyber Blog</a>
+            <div class="collapse navbar-collapse">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="/index.html?post=about" onclick="loadPost('about'); return false;">About</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/index.html?post=contact" onclick="loadPost('contact'); return false;">Contact</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
 
-    <main>
-        <div id="post-list" class="post-container"></div>
-        <div id="post-content" class="full-post"></div>
-    </main>
+    <div class="container">
+        <div id="post-list" class="row"></div>
+        <div id="post-content" class="full-post" style="display:none;"></div>
+    </div>
 
-    <footer>
+    <footer class="bg-dark text-center text-white py-3 mt-5">
         <p>&copy; 2025 Cyber Security Blog. All rights reserved.</p>
     </footer>
 
@@ -110,23 +56,25 @@
                 const response = await fetch('posts.json');
                 if (!response.ok) throw new Error('Failed to load posts');
                 postsData = await response.json();
-                
+
                 const postListContainer = document.getElementById('post-list');
                 postListContainer.innerHTML = '';
-                
+
                 postsData.forEach(post => {
                     const postDiv = document.createElement('div');
-                    postDiv.classList.add('post-preview');
+                    postDiv.classList.add('col-md-4', 'mb-4');
+
                     postDiv.innerHTML = `
-                        <img src="${post.image}" alt="${post.title}">
-                        <h2>${post.title}</h2>
-                        <p>${post.summary}</p>
-                        <p class="meta">#${post.tags.join(" #")} | 📅 ${post.date} | ⏳ ${post.read_time} | ✍ ${post.author}</p>
+                        <div class="card bg-dark text-white">
+                            <img src="${post.image}" class="card-img-top" alt="${post.title}">
+                            <div class="card-body">
+                                <h5 class="card-title">${post.title}</h5>
+                                <p class="card-text">${post.summary}</p>
+                                <a href="/posts/${post.slug}" class="btn btn-primary" onclick="loadPost('${post.slug}'); return false;">Read More</a>
+                            </div>
+                        </div>
                     `;
-                    postDiv.onclick = () => {
-                        history.pushState({}, "", `/posts/${post.slug}`);
-                        loadPost(post.slug);
-                    };
+
                     postListContainer.appendChild(postDiv);
                 });
             } catch (error) {
@@ -135,10 +83,10 @@
         }
 
         async function loadPost(slug) {
-            const post = postsData.find(p => p.slug === slug);
+            let post = postsData.find(p => p.slug === slug);
+            
             if (!post) {
-                console.error(`Post not found: ${slug}`);
-                return;
+                post = { url: `posts/${slug}.md`, image: `posts/${slug}.png`, title: slug };
             }
 
             history.pushState({}, "", `/posts/${slug}`);
@@ -150,14 +98,13 @@
                 const response = await fetch(post.url);
                 if (!response.ok) throw new Error('Failed to load content');
                 const markdown = await response.text();
-                
-                const converter = new showdown.Converter();
-                
-                const postContent = document.getElementById('post-content');
-                postContent.innerHTML = `<img src="${post.image}" alt="Post Image">${converter.makeHtml(markdown)}`;
 
+                const converter = new showdown.Converter();
+                const postContent = document.getElementById('post-content');
+
+                postContent.innerHTML = `<img src="${post.image}" alt="Post Image"><h1>${post.title}</h1>${converter.makeHtml(markdown)}`;
                 document.getElementById('post-list').style.display = 'none';
-                document.getElementById('post-content').style.display = 'block';
+                postContent.style.display = 'block';
             } catch (error) {
                 console.error('Error loading content:', error);
             }
@@ -173,6 +120,17 @@
                 fetchPostList();
             }
         };
+
+        window.onpopstate = function () {
+            const urlParams = new URLSearchParams(window.location.search);
+            const postSlug = urlParams.get('post');
+            if (postSlug) {
+                loadPost(postSlug);
+            } else {
+                showPostList();
+            }
+        };
     </script>
+
 </body>
 </html>
