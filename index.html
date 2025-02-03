@@ -99,8 +99,8 @@
         <nav>
             <ul>
                 <li><a href="#" onclick="showPostList()">Home</a></li>
-                <li><a href="#" onclick="loadPage('posts/about.md')">About</a></li>
-                <li><a href="#" onclick="loadPage('posts/contact.md')">Contact</a></li>
+                <li><a href="#" onclick="loadPost('about')">About</a></li>
+                <li><a href="#" onclick="loadPost('contact')">Contact</a></li>
             </ul>
         </nav>
     </header>
@@ -133,7 +133,7 @@
                         <p>${post.summary}</p>
                         <p class="meta">#${post.tags.join(" #")} | 📅 ${post.date} | ⏳ ${post.read_time} | ✍ ${post.author}</p>
                     `;
-                    postDiv.onclick = () => loadPost(post.url);
+                    postDiv.onclick = () => loadPost(post.url.replace('posts/', '').replace('.md', ''));
                     postListContainer.appendChild(postDiv);
                 });
             } catch (error) {
@@ -141,7 +141,9 @@
             }
         }
 
-        async function loadPost(url) {
+        async function loadPost(slug) {
+            const url = `posts/${slug}.md`;
+            history.pushState({ post: slug }, slug, `/${slug}`);
             await loadPage(url);
         }
 
@@ -160,7 +162,17 @@
                     ghCodeBlocks: true
                 });
                 
-                document.getElementById('post-content').innerHTML = converter.makeHtml(markdown);
+                const postContent = document.getElementById('post-content');
+                postContent.innerHTML = '';
+
+                // Display post image
+                const postImage = document.createElement('img');
+                postImage.src = url.replace('.md', '.png');
+                postImage.alt = 'Post Image';
+                postContent.appendChild(postImage);
+                
+                const postHtml = converter.makeHtml(markdown);
+                postContent.innerHTML += postHtml;
                 
                 document.getElementById('post-list').style.display = 'none';
                 document.getElementById('post-content').style.display = 'block';
@@ -173,6 +185,25 @@
             document.getElementById('post-list').style.display = 'block';
             document.getElementById('post-content').style.display = 'none';
         }
+
+        // Handle direct URL access
+        window.onload = function () {
+            const path = window.location.pathname.substring(1); // Remove leading '/'
+            if (path) {
+                loadPage(`posts/${path}.md`);
+            } else {
+                fetchPostList();
+            }
+        };
+
+        // Handle browser navigation (back/forward)
+        window.onpopstate = function (event) {
+            if (event.state && event.state.post) {
+                loadPage(`posts/${event.state.post}.md`);
+            } else {
+                showPostList();
+            }
+        };
 
         fetchPostList();
     </script>
