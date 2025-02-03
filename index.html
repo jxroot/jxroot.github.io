@@ -146,7 +146,10 @@
 
         async function loadPost(slug) {
             const post = postsData.find(p => p.slug === slug);
-            if (!post) return;
+            if (!post) {
+                console.error(`Post not found: ${slug}`);
+                return;
+            }
 
             history.pushState({ post: slug }, post.title, `/${slug}`);
             await loadPage(post);
@@ -154,10 +157,15 @@
 
         async function loadPage(post) {
             try {
+                if (!post || !post.url) {
+                    console.error("Invalid post data:", post);
+                    return;
+                }
+
                 const response = await fetch(post.url);
                 if (!response.ok) throw new Error('Failed to load content');
                 const markdown = await response.text();
-                
+
                 const converter = new showdown.Converter({
                     tables: true,
                     tasklists: true,
@@ -166,17 +174,21 @@
                     strikethrough: true,
                     ghCodeBlocks: true
                 });
-                
+
                 const postContent = document.getElementById('post-content');
                 postContent.innerHTML = '';
-                
-                const postImage = document.createElement('img');
-                postImage.src = post.image;
-                postImage.alt = 'Post Image';
-                postContent.appendChild(postImage);
-                
+
+                // Display post image if available
+                if (post.image) {
+                    const postImage = document.createElement('img');
+                    postImage.src = post.image;
+                    postImage.alt = 'Post Image';
+                    postContent.appendChild(postImage);
+                }
+
+                // Render Markdown content
                 postContent.innerHTML += converter.makeHtml(markdown);
-                
+
                 document.getElementById('post-list').style.display = 'none';
                 document.getElementById('post-content').style.display = 'block';
             } catch (error) {
@@ -188,6 +200,31 @@
             document.getElementById('post-list').style.display = 'block';
             document.getElementById('post-content').style.display = 'none';
         }
+
+        // Detect if a user loads a post directly from the URL
+        window.onload = function () {
+            const path = window.location.pathname.substring(1);
+            if (path) {
+                const post = postsData.find(p => p.slug === path);
+                if (post) {
+                    loadPage(post);
+                }
+            } else {
+                fetchPostList();
+            }
+        };
+
+        // Handle browser navigation (back/forward)
+        window.onpopstate = function (event) {
+            if (event.state && event.state.post) {
+                const post = postsData.find(p => p.slug === event.state.post);
+                if (post) {
+                    loadPage(post);
+                }
+            } else {
+                showPostList();
+            }
+        };
 
         fetchPostList();
     </script>
