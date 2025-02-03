@@ -32,13 +32,39 @@
             text-decoration: none;
             font-weight: bold;
         }
-        .intro {
-            text-align: center;
-            margin-top: 50px;
+        .post-container {
+            max-width: 800px;
+            margin: 30px auto;
+            padding: 20px;
+            background: #1a1a1a;
+            border-radius: 8px;
         }
-        .post-list {
-            text-align: center;
-            margin-top: 30px;
+        .post-preview {
+            background: #222;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+        .post-preview img {
+            width: 100%;
+            border-radius: 8px;
+        }
+        .post-preview h2 {
+            color: #00ffcc;
+        }
+        .post-preview p {
+            color: #ddd;
+        }
+        .post-preview .meta {
+            font-size: 12px;
+            color: #888;
+        }
+        .full-post {
+            display: none;
+            padding: 20px;
+            background: #1a1a1a;
+            border-radius: 8px;
         }
         footer {
             background-color: #1a1a1a;
@@ -54,48 +80,70 @@
     <header>
         <h1>Cyber Security Insights</h1>
         <nav>
-            <ul id="post-list">
-                <li><a href="index.html">Home</a></li>
+            <ul>
+                <li><a href="#" onclick="showPostList()">Home</a></li>
                 <li><a href="about.html">About</a></li>
             </ul>
         </nav>
     </header>
-    
+
     <main>
-        <section class="intro">
-            <h2>Welcome to the Dark Side of Cyber Security</h2>
-            <p>Stay updated with the latest trends, threats, and best practices in cyber security.</p>
-        </section>
-        <section class="post-list" id="posts">
-            <h2>Latest Posts</h2>
-            <ul id="posts-list"></ul>
-        </section>
+        <div id="post-list" class="post-container"></div>
+        <div id="post-content" class="full-post"></div>
     </main>
-    
+
     <footer>
         <p>&copy; 2025 Cyber Security Blog. All rights reserved.</p>
     </footer>
-    
+
     <script>
         async function fetchPostList() {
             try {
-                const response = await fetch('posts.json');  // Fetch the JSON file
+                const response = await fetch('posts.json');
                 if (!response.ok) throw new Error('Failed to load posts');
                 const posts = await response.json();
                 
-                const postList = document.getElementById('posts-list');
+                const postListContainer = document.getElementById('post-list');
+                postListContainer.innerHTML = '';
+                
                 posts.forEach(post => {
-                    const listItem = document.createElement('li');
-                    const postLink = document.createElement('a');
-                    postLink.href = post.url;
-                    postLink.textContent = post.title;
-                    listItem.appendChild(postLink);
-                    postList.appendChild(listItem);
+                    const postDiv = document.createElement('div');
+                    postDiv.classList.add('post-preview');
+                    postDiv.innerHTML = `
+                        <img src="${post.image}" alt="${post.title}">
+                        <h2>${post.title}</h2>
+                        <p>${post.summary}</p>
+                        <p class="meta">#${post.tags.join(" #")} | 📅 ${post.date} | ⏳ ${post.read_time} | ✍ ${post.author}</p>
+                    `;
+                    postDiv.onclick = () => loadPost(post.url);
+                    postListContainer.appendChild(postDiv);
                 });
             } catch (error) {
                 console.error('Error fetching post list:', error);
             }
         }
+
+        async function loadPost(url) {
+            try {
+                const response = await fetch(url);
+                if (!response.ok) throw new Error('Failed to load post content');
+                const markdown = await response.text();
+                
+                const converter = new showdown.Converter();
+                document.getElementById('post-content').innerHTML = converter.makeHtml(markdown);
+                
+                document.getElementById('post-list').style.display = 'none';
+                document.getElementById('post-content').style.display = 'block';
+            } catch (error) {
+                console.error('Error loading post:', error);
+            }
+        }
+
+        function showPostList() {
+            document.getElementById('post-list').style.display = 'block';
+            document.getElementById('post-content').style.display = 'none';
+        }
+
         fetchPostList();
     </script>
 </body>
