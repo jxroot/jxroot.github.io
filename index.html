@@ -71,19 +71,6 @@
             margin: 30px auto;
             color: #ddd;
         }
-        pre {
-            background: #222;
-            padding: 10px;
-            border-radius: 5px;
-            overflow-x: auto;
-        }
-        code {
-            color: #ffcc00;
-        }
-        img {
-            max-width: 100%;
-            border-radius: 8px;
-        }
         footer {
             background-color: #1a1a1a;
             text-align: center;
@@ -100,8 +87,8 @@
         <nav>
             <ul>
                 <li><a href="/" onclick="showPostList()">Home</a></li>
-                <li><a href="/?post=about" onclick="loadPost('about')">About</a></li>
-                <li><a href="/?post=contact" onclick="loadPost('contact')">Contact</a></li>
+                <li><a href="/posts/about" onclick="loadPost('about')">About</a></li>
+                <li><a href="/posts/contact" onclick="loadPost('contact')">Contact</a></li>
             </ul>
         </nav>
     </header>
@@ -145,12 +132,13 @@
         }
 
         async function loadPost(slug) {
-            const post = postsData.find(p => p.slug === slug) || { url: `posts/${slug}.md`, image: `posts/${slug}.png`, title: slug };
-            if (!post.url) {
-                console.error(`Post URL is undefined for slug: ${slug}`);
+            const post = postsData.find(p => p.slug === slug);
+            if (!post) {
+                console.error(`Post not found: ${slug}`);
                 return;
             }
-            history.pushState({ post: slug }, post.title, `/?post=${slug}`);
+
+            history.pushState({ post: slug }, post.title, `/posts/${slug}`);
             await loadPage(post);
         }
 
@@ -160,27 +148,11 @@
                 if (!response.ok) throw new Error('Failed to load content');
                 const markdown = await response.text();
                 
-                const converter = new showdown.Converter({
-                    tables: true,
-                    tasklists: true,
-                    simplifiedAutoLink: true,
-                    parseImgDimensions: true,
-                    strikethrough: true,
-                    ghCodeBlocks: true
-                });
+                const converter = new showdown.Converter();
                 
                 const postContent = document.getElementById('post-content');
-                postContent.innerHTML = '';
-                
-                if (post.image) {
-                    const postImage = document.createElement('img');
-                    postImage.src = post.image;
-                    postImage.alt = 'Post Image';
-                    postContent.appendChild(postImage);
-                }
-                
-                postContent.innerHTML += converter.makeHtml(markdown);
-                
+                postContent.innerHTML = `<img src="${post.image}" alt="Post Image">${converter.makeHtml(markdown)}`;
+
                 document.getElementById('post-list').style.display = 'none';
                 document.getElementById('post-content').style.display = 'block';
             } catch (error) {
@@ -188,15 +160,8 @@
             }
         }
 
-        function showPostList() {
-            document.getElementById('post-list').style.display = 'block';
-            document.getElementById('post-content').style.display = 'none';
-        }
-
         window.onload = function () {
-            const urlParams = new URLSearchParams(window.location.search);
-            const postSlug = urlParams.get('post');
-
+            const postSlug = window.location.pathname.split("/posts/")[1];
             if (postSlug) {
                 loadPost(postSlug);
             } else {
