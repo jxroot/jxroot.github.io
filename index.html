@@ -87,8 +87,8 @@
         <nav>
             <ul>
                 <li><a href="/" onclick="showPostList()">Home</a></li>
-                <li><a href="/posts/about" onclick="loadPost('about')">About</a></li>
-                <li><a href="/posts/contact" onclick="loadPost('contact')">Contact</a></li>
+                <li><a href="/posts/about" onclick="loadPost('about'); return false;">About</a></li>
+                <li><a href="/posts/contact" onclick="loadPost('contact'); return false;">Contact</a></li>
             </ul>
         </nav>
     </header>
@@ -123,7 +123,7 @@
                         <p>${post.summary}</p>
                         <p class="meta">#${post.tags.join(" #")} | 📅 ${post.date} | ⏳ ${post.read_time} | ✍ ${post.author}</p>
                     `;
-                    postDiv.onclick = () => loadPost(post.slug); // ✅ Fix: Pass correct slug
+                    postDiv.onclick = () => loadPost(post.slug);
                     postListContainer.appendChild(postDiv);
                 });
             } catch (error) {
@@ -161,13 +161,21 @@
         }
 
         window.onload = function () {
-            const pathParts = window.location.pathname.split("/posts/");
-            const postSlug = pathParts.length > 1 ? pathParts[1] : null;
+            const urlParams = new URLSearchParams(window.location.search);
+            const postSlug = urlParams.get('post');
 
             if (postSlug) {
                 loadPost(postSlug);
             } else {
                 fetchPostList();
+            }
+        };
+
+        window.onpopstate = function (event) {
+            if (event.state && event.state.post) {
+                loadPost(event.state.post);
+            } else {
+                showPostList();
             }
         };
     </script>
