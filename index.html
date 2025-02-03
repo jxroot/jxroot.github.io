@@ -79,21 +79,16 @@
     <script>
         async function fetchPostList() {
             try {
-                const response = await fetch('posts/');
-                if (!response.ok) throw new Error('Failed to fetch posts');
-                const text = await response.text();
-                const parser = new DOMParser();
-                const htmlDoc = parser.parseFromString(text, 'text/html');
-                const links = [...htmlDoc.querySelectorAll('a')]
-                    .map(a => a.getAttribute('href'))
-                    .filter(href => href.endsWith('.md'));
+                const response = await fetch('posts.json');  // Fetch the JSON file
+                if (!response.ok) throw new Error('Failed to load posts');
+                const posts = await response.json();
                 
                 const postList = document.getElementById('posts-list');
-                links.forEach(link => {
+                posts.forEach(post => {
                     const listItem = document.createElement('li');
                     const postLink = document.createElement('a');
-                    postLink.href = `posts/${link}`;
-                    postLink.textContent = link.replace('.md', '').replace(/[-_]/g, ' ');
+                    postLink.href = post.url;
+                    postLink.textContent = post.title;
                     listItem.appendChild(postLink);
                     postList.appendChild(listItem);
                 });
