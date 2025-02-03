@@ -135,7 +135,8 @@
         }
 
         function loadPost(url, image) {
-            history.pushState({}, '', `/posts/${url}`);
+            history.pushState({}, '', `/${url}`);
+
             fetchPostContent(url, image);
         }
 
