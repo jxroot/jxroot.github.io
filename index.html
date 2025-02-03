@@ -68,6 +68,20 @@
             border-radius: 8px;
             max-width: 800px;
             margin: 30px auto;
+            color: #ddd;
+        }
+        pre {
+            background: #222;
+            padding: 10px;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+        code {
+            color: #ffcc00;
+        }
+        img {
+            max-width: 100%;
+            border-radius: 8px;
         }
         footer {
             background-color: #1a1a1a;
@@ -137,11 +151,14 @@
                 if (!response.ok) throw new Error('Failed to load content');
                 const markdown = await response.text();
                 
-                const converter = new showdown.Converter();
-                converter.setOption('tables', true);
-                converter.setOption('tasklists', true);
-                converter.setOption('simplifiedAutoLink', true);
-                converter.setOption('parseImgDimensions', true);
+                const converter = new showdown.Converter({
+                    tables: true,
+                    tasklists: true,
+                    simplifiedAutoLink: true,
+                    parseImgDimensions: true,
+                    strikethrough: true,
+                    ghCodeBlocks: true
+                });
                 
                 document.getElementById('post-content').innerHTML = converter.makeHtml(markdown);
                 
