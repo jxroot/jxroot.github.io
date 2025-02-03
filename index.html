@@ -12,7 +12,6 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/languages/python.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/languages/cpp.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/languages/powershell.min.js"></script>
-
     <style>
         body {
             background-color: #0d0d0d;
@@ -89,7 +88,7 @@
 <body>
     <nav class="navbar navbar-dark bg-dark navbar-expand-lg">
         <div class="container">
-            <a class="navbar-brand" href="#" onclick="fetchPostList(); return false;">Cyber Blog</a>
+            <a class="navbar-brand" href="/" onclick="fetchPostList(); return false;">Cyber Blog</a>
             <button class="theme-toggle" onclick="toggleTheme()">🌙</button>
         </div>
     </nav>
@@ -124,7 +123,7 @@
                                 <p class="post-meta">By ${post.author} | ${post.date} | ${post.read_time} read</p>
                                 <p class="card-text">${post.summary}</p>
                                 <p class="post-meta"><strong>Tags:</strong> ${post.tags.join(', ')}</p>
-                                <a href="#/posts/${post.url}" class="btn btn-primary" onclick="loadPost('${post.url}', '${post.image}'); return false;">Read More</a>
+                                <a href="/posts/${post.url}" class="btn btn-primary" onclick="loadPost('${post.url}', '${post.image}'); return false;">Read More</a>
                             </div>
                         </div>
                     `;
@@ -135,7 +134,12 @@
             }
         }
 
-        async function loadPost(url, image) {
+        function loadPost(url, image) {
+            history.pushState({}, '', `/posts/${url}`);
+            fetchPostContent(url, image);
+        }
+
+        async function fetchPostContent(url, image) {
             try {
                 const response = await fetch(url);
                 if (!response.ok) throw new Error('Failed to load content');
@@ -143,10 +147,9 @@
                 const converter = new showdown.Converter({ tables: true, simplifiedAutoLink: true, tasklists: true });
                 let htmlContent = converter.makeHtml(markdown);
                 htmlContent = `<img src="${image}" alt="Post Image">` + htmlContent;
-                const postContent = document.getElementById('post-content');
-                postContent.innerHTML = `<h1>${url}</h1>${htmlContent}<br><a href="#" onclick="fetchPostList(); return false;">Back to Posts</a>`;
+                document.getElementById('post-content').innerHTML = htmlContent;
                 document.getElementById('post-list').style.display = 'none';
-                postContent.style.display = 'block';
+                document.getElementById('post-content').style.display = 'block';
                 document.querySelectorAll('pre code').forEach((block) => {
                     hljs.highlightElement(block);
                 });
