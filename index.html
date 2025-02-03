@@ -66,6 +66,8 @@
             padding: 20px;
             background: #1a1a1a;
             border-radius: 8px;
+            max-width: 800px;
+            margin: 30px auto;
         }
         footer {
             background-color: #1a1a1a;
@@ -136,6 +138,11 @@
                 const markdown = await response.text();
                 
                 const converter = new showdown.Converter();
+                converter.setOption('tables', true);
+                converter.setOption('tasklists', true);
+                converter.setOption('simplifiedAutoLink', true);
+                converter.setOption('parseImgDimensions', true);
+                
                 document.getElementById('post-content').innerHTML = converter.makeHtml(markdown);
                 
                 document.getElementById('post-list').style.display = 'none';
