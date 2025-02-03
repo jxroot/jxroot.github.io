@@ -32,8 +32,8 @@
             <a class="navbar-brand" href="/" onclick="showPostList(); return false;">Cyber Blog</a>
             <div class="collapse navbar-collapse">
                 <ul class="navbar-nav ms-auto">
-                    <li class="nav-item"><a class="nav-link" href="?post=about" onclick="loadPost('about'); return false;">About</a></li>
-                    <li class="nav-item"><a class="nav-link" href="?post=contact" onclick="loadPost('contact'); return false;">Contact</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/index.html?post=about" onclick="loadPost('$1'); event.preventDefault();">About</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/index.html?post=contact" onclick="loadPost('contact'); return false;">Contact</a></li>
                 </ul>
             </div>
         </div>
@@ -70,7 +70,7 @@
                             <div class="card-body">
                                 <h5 class="card-title">${post.title}</h5>
                                 <p class="card-text">${post.summary}</p>
-                                <a href="?post=${post.slug}" class="btn btn-primary" onclick="loadPost('${post.slug}'); return false;">Read More</a>
+                                <a href="/posts/${post.slug}" class="btn btn-primary" onclick="loadPost('${post.slug}'); return false;">Read More</a>
                             </div>
                         </div>
                     `;
@@ -89,7 +89,7 @@
                 post = { url: `posts/${slug}.md`, image: `posts/${slug}.png`, title: slug };
             }
 
-            history.pushState({}, "", `?post=${slug}`);
+            history.pushState({}, "", `/posts/${slug}`);
             await loadPage(post);
         }
 
@@ -108,11 +108,6 @@
             } catch (error) {
                 console.error('Error loading content:', error);
             }
-        }
-
-        function showPostList() {
-            document.getElementById('post-list').style.display = 'block';
-            document.getElementById('post-content').style.display = 'none';
         }
 
         window.onload = function () {
