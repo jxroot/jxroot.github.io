@@ -99,9 +99,9 @@
         <h1>Cyber Security Insights</h1>
         <nav>
             <ul>
-                <li><a href="#" onclick="showPostList()">Home</a></li>
-                <li><a href="#" onclick="loadPost('about')">About</a></li>
-                <li><a href="#" onclick="loadPost('contact')">Contact</a></li>
+                <li><a href="/" onclick="showPostList()">Home</a></li>
+                <li><a href="/?post=about" onclick="loadPost('about')">About</a></li>
+                <li><a href="/?post=contact" onclick="loadPost('contact')">Contact</a></li>
             </ul>
         </nav>
     </header>
@@ -150,7 +150,7 @@
                 console.error(`Post URL is undefined for slug: ${slug}`);
                 return;
             }
-            history.pushState({ post: slug }, post.title, `/${slug}`);
+            history.pushState({ post: slug }, post.title, `/?post=${slug}`);
             await loadPage(post);
         }
 
@@ -193,7 +193,16 @@
             document.getElementById('post-content').style.display = 'none';
         }
 
-        fetchPostList();
+        window.onload = function () {
+            const urlParams = new URLSearchParams(window.location.search);
+            const postSlug = urlParams.get('post');
+
+            if (postSlug) {
+                loadPost(postSlug);
+            } else {
+                fetchPostList();
+            }
+        };
     </script>
 </body>
 </html>
