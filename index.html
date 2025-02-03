@@ -3,127 +3,105 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Cyber Security Blog</title>
-    <link rel="stylesheet" href="style.css">
+    <title>Cyber Security Blog</title>
+    <link rel="stylesheet" href="styles.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/showdown/2.1.0/showdown.min.js"></script>
-    <script>
-        async function loadMarkdown(file) {
-            let response = await fetch(file);
-            let text = await response.text();
-            let converter = new showdown.Converter();
-            document.getElementById("markdown-content").innerHTML = converter.makeHtml(text);
-        }
-
-        document.addEventListener("DOMContentLoaded", function() {
-            let params = new URLSearchParams(window.location.search);
-            if (params.has("file")) {
-                loadMarkdown("posts/" + params.get("file"));
-            }
-        });
-    </script>
     <style>
-        :root {
-            --primary-color: #00ffcc;
-            --background-dark: #0a0a0a;
-            --background-light: #ffffff;
-            --text-dark: #00ffcc;
-            --text-light: #333333;
-        }
         body {
-            background-color: var(--background-dark);
-            color: var(--text-dark);
-            font-family: 'Courier New', Courier, monospace;
+            background-color: #0d0d0d;
+            color: #00ffcc;
+            font-family: Arial, sans-serif;
             margin: 0;
             padding: 0;
-            transition: all 0.3s ease-in-out;
-        }
-        .light-mode {
-            background-color: var(--background-light);
-            color: var(--text-light);
         }
         header {
-            background: #111;
+            background-color: #1a1a1a;
             padding: 20px;
             text-align: center;
-            box-shadow: 0px 4px 8px rgba(0, 255, 204, 0.2);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
         }
         nav ul {
             list-style: none;
             padding: 0;
-            margin: 0;
         }
         nav ul li {
             display: inline;
-            margin: 0 15px;
+            margin-right: 15px;
         }
         nav ul li a {
-            color: var(--primary-color);
+            color: #00ffcc;
             text-decoration: none;
             font-weight: bold;
         }
-        .theme-toggle {
-            cursor: pointer;
-            background: none;
-            border: none;
-            color: var(--primary-color);
-            font-size: 1.5em;
+        .intro {
+            text-align: center;
+            margin-top: 50px;
         }
-        main {
-            padding: 20px;
-        }
-        .posts article {
-            background: #222;
-            padding: 15px;
-            margin-bottom: 20px;
-            border-left: 5px solid var(--primary-color);
-            box-shadow: 0px 4px 10px rgba(0, 255, 204, 0.1);
-        }
-        .posts article h2 a {
-            color: var(--primary-color);
-            text-decoration: none;
+        .post-list {
+            text-align: center;
+            margin-top: 30px;
         }
         footer {
-            background: #111;
+            background-color: #1a1a1a;
             text-align: center;
-            padding: 15px;
-            box-shadow: 0px -4px 8px rgba(0, 255, 204, 0.2);
+            padding: 10px;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
         }
     </style>
 </head>
 <body>
     <header>
-        <h1>My Cyber Security Blog</h1>
-        <button class="theme-toggle" onclick="toggleTheme()">☀️</button>
+        <h1>Cyber Security Insights</h1>
         <nav>
-            <ul>
+            <ul id="post-list">
                 <li><a href="index.html">Home</a></li>
-                <li><a href="markdown.html?file=about.md">About</a></li>
-                <li><a href="markdown.html?file=contact.md">Contact</a></li>
+                <li><a href="about.html">About</a></li>
             </ul>
         </nav>
     </header>
+    
     <main>
-        <section class="posts">
-            <article>
-                <h2><a href="markdown.html?file=post1.md">First Blog Post</a></h2>
-                <p>Published on: January 1, 2025</p>
-                <p>A short excerpt from the first post...</p>
-            </article>
-            <article>
-                <h2><a href="markdown.html?file=post2.md">Second Blog Post</a></h2>
-                <p>Published on: February 1, 2025</p>
-                <p>A short excerpt from the second post...</p>
-            </article>
+        <section class="intro">
+            <h2>Welcome to the Dark Side of Cyber Security</h2>
+            <p>Stay updated with the latest trends, threats, and best practices in cyber security.</p>
         </section>
-        <article id="markdown-content">
-            <p>Loading content...</p>
-        </article>
+        <section class="post-list" id="posts">
+            <h2>Latest Posts</h2>
+            <ul id="posts-list"></ul>
+        </section>
     </main>
+    
     <footer>
-        <p>&copy; 2025 My Cyber Security Blog</p>
+        <p>&copy; 2025 Cyber Security Blog. All rights reserved.</p>
     </footer>
+    
+    <script>
+        async function fetchPostList() {
+            try {
+                const response = await fetch('posts/');
+                if (!response.ok) throw new Error('Failed to fetch posts');
+                const text = await response.text();
+                const parser = new DOMParser();
+                const htmlDoc = parser.parseFromString(text, 'text/html');
+                const links = [...htmlDoc.querySelectorAll('a')]
+                    .map(a => a.getAttribute('href'))
+                    .filter(href => href.endsWith('.md'));
+                
+                const postList = document.getElementById('posts-list');
+                links.forEach(link => {
+                    const listItem = document.createElement('li');
+                    const postLink = document.createElement('a');
+                    postLink.href = `posts/${link}`;
+                    postLink.textContent = link.replace('.md', '').replace(/[-_]/g, ' ');
+                    listItem.appendChild(postLink);
+                    postList.appendChild(listItem);
+                });
+            } catch (error) {
+                console.error('Error fetching post list:', error);
+            }
+        }
+        fetchPostList();
+    </script>
 </body>
 </html>
