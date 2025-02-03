@@ -1,4 +1,12 @@
 [
-    { "title": "Post 1", "url": "posts/post1.md" }
+    {
+        "title": "hello world",
+        "url": "posts/post1.md",
+        "summary": "In this post, we explore an Android Stack Overflow vulnerability...",
+        "tags": ["a", "b", "c", "d"],
+        "date": "2024-09-26",
+        "read_time": "8 minutes",
+        "author": "wdssdadw",
+        "image": "images/post1.png"
+    }
 ]
-
