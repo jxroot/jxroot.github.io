@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@300;400;700&display=swap" rel="stylesheet">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cyber Security Blog</title>
@@ -10,7 +11,7 @@
         body {
             background-color: #0d0d0d;
             color: #00ffcc;
-            font-family: Arial, sans-serif;
+            font-family: 'Roboto Mono', monospace;
             margin: 0;
             padding: 0;
         }
@@ -115,16 +116,18 @@
     </footer>
 
     <script>
+        let postsData = [];
+
         async function fetchPostList() {
             try {
                 const response = await fetch('posts.json');
                 if (!response.ok) throw new Error('Failed to load posts');
-                const posts = await response.json();
+                postsData = await response.json();
                 
                 const postListContainer = document.getElementById('post-list');
                 postListContainer.innerHTML = '';
                 
-                posts.forEach(post => {
+                postsData.forEach(post => {
                     const postDiv = document.createElement('div');
                     postDiv.classList.add('post-preview');
                     postDiv.innerHTML = `
@@ -133,7 +136,7 @@
                         <p>${post.summary}</p>
                         <p class="meta">#${post.tags.join(" #")} | 📅 ${post.date} | ⏳ ${post.read_time} | ✍ ${post.author}</p>
                     `;
-                    postDiv.onclick = () => loadPost(post.url.replace('posts/', '').replace('.md', ''));
+                    postDiv.onclick = () => loadPost(post.slug);
                     postListContainer.appendChild(postDiv);
                 });
             } catch (error) {
@@ -142,14 +145,16 @@
         }
 
         async function loadPost(slug) {
-            const url = `posts/${slug}.md`;
-            history.pushState({ post: slug }, slug, `/${slug}`);
-            await loadPage(url);
+            const post = postsData.find(p => p.slug === slug);
+            if (!post) return;
+
+            history.pushState({ post: slug }, post.title, `/${slug}`);
+            await loadPage(post);
         }
 
-        async function loadPage(url) {
+        async function loadPage(post) {
             try {
-                const response = await fetch(url);
+                const response = await fetch(post.url);
                 if (!response.ok) throw new Error('Failed to load content');
                 const markdown = await response.text();
                 
@@ -164,15 +169,13 @@
                 
                 const postContent = document.getElementById('post-content');
                 postContent.innerHTML = '';
-
-                // Display post image
+                
                 const postImage = document.createElement('img');
-                postImage.src = url.replace('.md', '.png');
+                postImage.src = post.image;
                 postImage.alt = 'Post Image';
                 postContent.appendChild(postImage);
                 
-                const postHtml = converter.makeHtml(markdown);
-                postContent.innerHTML += postHtml;
+                postContent.innerHTML += converter.makeHtml(markdown);
                 
                 document.getElementById('post-list').style.display = 'none';
                 document.getElementById('post-content').style.display = 'block';
@@ -185,25 +188,6 @@
             document.getElementById('post-list').style.display = 'block';
             document.getElementById('post-content').style.display = 'none';
         }
-
-        // Handle direct URL access
-        window.onload = function () {
-            const path = window.location.pathname.substring(1); // Remove leading '/'
-            if (path) {
-                loadPage(`posts/${path}.md`);
-            } else {
-                fetchPostList();
-            }
-        };
-
-        // Handle browser navigation (back/forward)
-        window.onpopstate = function (event) {
-            if (event.state && event.state.post) {
-                loadPage(`posts/${event.state.post}.md`);
-            } else {
-                showPostList();
-            }
-        };
 
         fetchPostList();
     </script>
