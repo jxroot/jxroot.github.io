@@ -173,16 +173,6 @@
                 fetchPostList();
             }
         };
-
-        window.onpopstate = function () {
-            const urlParams = new URLSearchParams(window.location.search);
-            const postSlug = urlParams.get('post');
-            if (postSlug) {
-                loadPost(postSlug);
-            } else {
-                showPostList();
-            }
-        };
     </script>
 </body>
 </html>
