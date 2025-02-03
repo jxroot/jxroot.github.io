@@ -44,7 +44,7 @@
         .post-preview {
             background: #222;
             padding: 15px;
-            margin-bottom: 15px;
+            margin-bottom: 30px;
             border-radius: 8px;
             cursor: pointer;
         }
@@ -87,9 +87,9 @@
         footer {
             background-color: #1a1a1a;
             text-align: center;
-            padding: 10px;
-            position: fixed;
-            bottom: 0;
+            padding: 20px;
+            position: relative;
+            margin-top: 30px;
             width: 100%;
         }
     </style>
@@ -146,6 +146,10 @@
 
         async function loadPost(slug) {
             const post = postsData.find(p => p.slug === slug) || { url: `posts/${slug}.md`, image: `posts/${slug}.png`, title: slug };
+            if (!post.url) {
+                console.error(`Post URL is undefined for slug: ${slug}`);
+                return;
+            }
             history.pushState({ post: slug }, post.title, `/${slug}`);
             await loadPage(post);
         }
