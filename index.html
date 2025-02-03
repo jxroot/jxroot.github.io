@@ -86,9 +86,9 @@
         <h1>Cyber Security Insights</h1>
         <nav>
             <ul>
-                <li><a href="/" onclick="showPostList()">Home</a></li>
-                <li><a href="/posts/about" onclick="loadPost('about'); return false;">About</a></li>
-                <li><a href="/posts/contact" onclick="loadPost('contact'); return false;">Contact</a></li>
+                <li><a href="/" onclick="showPostList(); return false;">Home</a></li>
+                <li><a href="/index.html?post=about" onclick="loadPost('about'); return false;">About</a></li>
+                <li><a href="/index.html?post=contact" onclick="loadPost('contact'); return false;">Contact</a></li>
             </ul>
         </nav>
     </header>
@@ -123,7 +123,10 @@
                         <p>${post.summary}</p>
                         <p class="meta">#${post.tags.join(" #")} | 📅 ${post.date} | ⏳ ${post.read_time} | ✍ ${post.author}</p>
                     `;
-                    postDiv.onclick = () => loadPost(post.slug);
+                    postDiv.onclick = () => {
+                        history.pushState({}, "", `/posts/${post.slug}`);
+                        loadPost(post.slug);
+                    };
                     postListContainer.appendChild(postDiv);
                 });
             } catch (error) {
@@ -138,7 +141,7 @@
                 return;
             }
 
-            history.pushState({ post: slug }, post.title, `/posts/${slug}`);
+            history.pushState({}, "", `/posts/${slug}`);
             await loadPage(post);
         }
 
@@ -171,9 +174,11 @@
             }
         };
 
-        window.onpopstate = function (event) {
-            if (event.state && event.state.post) {
-                loadPost(event.state.post);
+        window.onpopstate = function () {
+            const urlParams = new URLSearchParams(window.location.search);
+            const postSlug = urlParams.get('post');
+            if (postSlug) {
+                loadPost(postSlug);
             } else {
                 showPostList();
             }
