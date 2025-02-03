@@ -3,68 +3,99 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Blog</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/4.3.0/marked.min.js"></script>
-    <script>
-        document.addEventListener("DOMContentLoaded", async () => {
-            const postsContainer = document.getElementById("posts");
-            const postContainer = document.getElementById("post");
-            
-            async function loadPosts() {
-                const response = await fetch("posts.json");
-                const posts = await response.json();
-                postsContainer.innerHTML = posts.map(post => `
-                    <div class="post-preview">
-                        <img src="${post.image}" alt="Post Image" style="width: 100%; max-height: 200px; object-fit: cover;">
-                        <h2>${post.title}</h2>
-                        <p>${post.summary}</p>
-                        <p><strong>Author:</strong> ${post.author} | <strong>Date:</strong> ${post.date} | <strong>Read Time:</strong> ${post.read_time}</p>
-                        <p><strong>Tags:</strong> ${post.tags.join(", ")}</p>
-                        <a href="#/posts/${post.url}" class="read-more" data-url="${post.url}">Show Full Info</a>
-                    </div>
-                `).join("\n");
-            }
-            
-            async function loadMarkdownFile(filePath) {
-                try {
-                    const response = await fetch(filePath);
-                    if (!response.ok) throw new Error("File not found");
-                    const text = await response.text();
-                    postContainer.innerHTML = marked.parse(text) + '<br><a href="#/">Back to Posts</a>';
-                } catch (error) {
-                    postContainer.innerHTML = "<h2>Post not found</h2>";
-                }
-            }
-            
-            async function router() {
-                const hash = location.hash;
-                if (hash.startsWith("#/posts/")) {
-                    const postUrl = hash.split("#/posts/")[1];
-                    postsContainer.style.display = "none";
-                    postContainer.style.display = "block";
-                    loadMarkdownFile(postUrl);
-                } else {
-                    postsContainer.style.display = "block";
-                    postContainer.style.display = "none";
-                    loadPosts();
-                }
-            }
-            
-            window.addEventListener("hashchange", router);
-            router();
-        });
-    </script>
+    <title>Cyber Security Blog</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/showdown/2.1.0/showdown.min.js"></script>
     <style>
-        body { font-family: Arial, sans-serif; padding: 20px; background-color: #222; color: white; }
-        .post-preview { border-bottom: 1px solid #444; padding: 10px 0; }
-        .post-preview img { display: block; margin-bottom: 10px; }
-        .read-more { color: lightblue; text-decoration: none; }
-        a { color: lightblue; }
+        body {
+            background-color: #0d0d0d;
+            color: #00ffcc;
+            font-family: 'Arial', sans-serif;
+        }
+        .container {
+            margin-top: 20px;
+        }
+        .post-preview img {
+            width: 100%;
+            height: auto;
+            border-radius: 8px;
+        }
+        .full-post img {
+            width: 100%;
+            border-radius: 8px;
+        }
     </style>
 </head>
 <body>
-    <h1>My Blog</h1>
-    <div id="posts"></div>
-    <div id="post" style="display: none;"></div>
+    <nav class="navbar navbar-dark bg-dark navbar-expand-lg">
+        <div class="container">
+            <a class="navbar-brand" href="#" onclick="fetchPostList(); return false;">Cyber Blog</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div id="post-list" class="row"></div>
+        <div id="post-content" class="full-post" style="display:none;"></div>
+    </div>
+
+    <footer class="bg-dark text-center text-white py-3 mt-5">
+        <p>&copy; 2025 Cyber Security Blog. All rights reserved.</p>
+    </footer>
+
+    <script>
+        let postsData = [];
+
+        async function fetchPostList() {
+            try {
+                const response = await fetch('posts.json');
+                if (!response.ok) throw new Error('Failed to load posts');
+                postsData = await response.json();
+
+                const postListContainer = document.getElementById('post-list');
+                postListContainer.innerHTML = '';
+
+                postsData.forEach(post => {
+                    const postDiv = document.createElement('div');
+                    postDiv.classList.add('col-md-4', 'mb-4');
+
+                    postDiv.innerHTML = `
+                        <div class="card bg-dark text-white">
+                            <img src="${post.image}" class="card-img-top" alt="${post.title}">
+                            <div class="card-body">
+                                <h5 class="card-title">${post.title}</h5>
+                                <p class="card-text">${post.summary}</p>
+                                <a href="#" class="btn btn-primary" onclick="loadPost('${post.url}'); return false;">Read More</a>
+                            </div>
+                        </div>
+                    `;
+
+                    postListContainer.appendChild(postDiv);
+                });
+            } catch (error) {
+                console.error('Error fetching post list:', error);
+            }
+        }
+
+        async function loadPost(url) {
+            try {
+                const response = await fetch(url);
+                if (!response.ok) throw new Error('Failed to load content');
+                const markdown = await response.text();
+
+                const converter = new showdown.Converter();
+                const postContent = document.getElementById('post-content');
+
+                postContent.innerHTML = `<h1>${url}</h1>${converter.makeHtml(markdown)}<br><a href="#" onclick="fetchPostList(); return false;">Back to Posts</a>`;
+                document.getElementById('post-list').style.display = 'none';
+                postContent.style.display = 'block';
+            } catch (error) {
+                console.error('Error loading content:', error);
+            }
+        }
+
+        window.onload = function () {
+            fetchPostList();
+        };
+    </script>
 </body>
 </html>
