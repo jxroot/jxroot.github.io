@@ -11,6 +11,7 @@
             background-color: #0d0d0d;
             color: #00ffcc;
             font-family: 'Arial', sans-serif;
+            transition: background-color 0.3s, color 0.3s;
         }
         .container {
             margin-top: 20px;
@@ -24,12 +25,38 @@
             width: 100%;
             border-radius: 8px;
         }
+        .post-meta {
+            font-size: 0.9em;
+            color: #bbb;
+        }
+        .theme-toggle {
+            position: absolute;
+            top: 10px;
+            right: 20px;
+            cursor: pointer;
+            border: none;
+            background: none;
+            font-size: 1.5em;
+        }
+        .light-mode {
+            background-color: #f4f4f4;
+            color: #333;
+        }
+        .light-mode .card {
+            background-color: #ffffff;
+            color: #000;
+        }
+        .light-mode .navbar, .light-mode .footer {
+            background-color: #ddd !important;
+            color: #333 !important;
+        }
     </style>
 </head>
 <body>
     <nav class="navbar navbar-dark bg-dark navbar-expand-lg">
         <div class="container">
             <a class="navbar-brand" href="#" onclick="fetchPostList(); return false;">Cyber Blog</a>
+            <button class="theme-toggle" onclick="toggleTheme()">🌙</button>
         </div>
     </nav>
 
@@ -38,7 +65,7 @@
         <div id="post-content" class="full-post" style="display:none;"></div>
     </div>
 
-    <footer class="bg-dark text-center text-white py-3 mt-5">
+    <footer class="bg-dark text-center text-white py-3 mt-5 footer">
         <p>&copy; 2025 Cyber Security Blog. All rights reserved.</p>
     </footer>
 
@@ -63,8 +90,10 @@
                             <img src="${post.image}" class="card-img-top" alt="${post.title}">
                             <div class="card-body">
                                 <h5 class="card-title">${post.title}</h5>
+                                <p class="post-meta">By ${post.author} | ${post.date} | ${post.read_time} read</p>
                                 <p class="card-text">${post.summary}</p>
-                                <a href="#" class="btn btn-primary" onclick="loadPost('${post.url}'); return false;">Read More</a>
+                                <p class="post-meta"><strong>Tags:</strong> ${post.tags.join(', ')}</p>
+                                <a href="#/posts/${post.url}" class="btn btn-primary" onclick="loadPost('${post.url}'); return false;">Read More</a>
                             </div>
                         </div>
                     `;
@@ -90,6 +119,16 @@
                 postContent.style.display = 'block';
             } catch (error) {
                 console.error('Error loading content:', error);
+            }
+        }
+
+        function toggleTheme() {
+            document.body.classList.toggle('light-mode');
+            const button = document.querySelector('.theme-toggle');
+            if (document.body.classList.contains('light-mode')) {
+                button.textContent = '☀️';
+            } else {
+                button.textContent = '🌙';
             }
         }
 
