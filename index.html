@@ -31,6 +31,7 @@
             color: #00ffcc;
             text-decoration: none;
             font-weight: bold;
+            cursor: pointer;
         }
         .post-container {
             max-width: 800px;
@@ -82,7 +83,8 @@
         <nav>
             <ul>
                 <li><a href="#" onclick="showPostList()">Home</a></li>
-                <li><a href="about.html">About</a></li>
+                <li><a href="#" onclick="loadPage('posts/about.md')">About</a></li>
+                <li><a href="#" onclick="loadPage('posts/contact.md')">Contact</a></li>
             </ul>
         </nav>
     </header>
@@ -124,9 +126,13 @@
         }
 
         async function loadPost(url) {
+            await loadPage(url);
+        }
+
+        async function loadPage(url) {
             try {
                 const response = await fetch(url);
-                if (!response.ok) throw new Error('Failed to load post content');
+                if (!response.ok) throw new Error('Failed to load content');
                 const markdown = await response.text();
                 
                 const converter = new showdown.Converter();
@@ -135,7 +141,7 @@
                 document.getElementById('post-list').style.display = 'none';
                 document.getElementById('post-content').style.display = 'block';
             } catch (error) {
-                console.error('Error loading post:', error);
+                console.error('Error loading content:', error);
             }
         }
 
