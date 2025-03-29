@@ -94,7 +94,7 @@ Windows provides several built-in commands that can be used to gather informatio
 
 ✅ **Check SMB  info**
 
-![image.png](image.png)
+![image.png](assets/images/image.png)
 
 The `Get-SmbServerConfiguration` command in **PowerShell** is used to retrieve the current configuration settings of the **SMB (Server Message Block) service** on a Windows machine. It provides detailed information about the SMB server settings, including protocol versions, security configurations, and access policies.
 
