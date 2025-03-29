@@ -289,7 +289,7 @@ Get-SmbSession | Where-Object {$_.ClientUserName -eq "Guest"}
 
 ```
 
-![image.png](image%201.png)
+![image.png](../assets/images/image%201.png)
 
 ✅ If any results appear, **unauthorized SMB guest access is active**.
 
@@ -364,7 +364,7 @@ crackmapexec smb <target_IP> --users
 crackmapexec smb 192.168.1.11 -u CL1 -p 'R$$tme1234'
 ```
 
-![image.png](image%202.png)
+![image.png](../assets/images/image%202.png)
 
 ### **⚙️ SMB Bruteforce test use** net use
 
