@@ -1,22 +1,12 @@
 [
     {
-        "id": "first-post",
-        "title": "Introduction to Network Security",
-        "date": "2024-03-20",
-        "preview": "In this post, we'll explore the basic concepts of network security. We'll examine topics such as confidentiality, integrity, and availability...",
-        "tags": ["Network Security", "Penetration Testing", "Ethical Hacking"],
-        "image": "assets/images/post1.png",
-        "author": "Ali Hakimi",
+        "id": "DVM",
+        "title": "Detecting Virtual Machines and Sandbox",
+        "date": "2024-11-20",
+        "preview": "Malware analysts routinely examine suspicious code in isolated environments like virtual machines (VMs) or sandboxes.",
+        "tags": ["Network Security", "Penetration Testing", "Ethical Hacking","Red Team"],
+        "image": "assets/images/DVM.png",
+        "author": "HamidReza Mohseniyan",
         "read_time": "5 minutes"
-    },
-    {
-        "id": "android-exploitation",
-        "title": "Android Stack Overflow Exploitation Tutorial",
-        "date": "2024-03-21",
-        "preview": "In this article, we'll examine a stack overflow vulnerability in an Android messaging application. Using reverse engineering techniques and code analysis...",
-        "tags": ["Android", "Exploitation", "ReverseEngineering"],
-        "image": "assets/images/post1.png",
-        "author": "Mohammad Rezaei",
-        "read_time": "10 minutes"
     }
 ]
