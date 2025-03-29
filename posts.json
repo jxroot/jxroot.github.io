@@ -8,5 +8,15 @@
         "image": "assets/images/DVM.png",
         "author": "HamidReza Mohseniyan",
         "read_time": "5 minutes"
+    },{
+"id": "SMB",
+        "title": "Attack And Defense SMB",
+        "date": "2024-12-07",
+        "preview": "SMB (Server Message Block) is a network file-sharing protocol that allows systems to share files, printers, and other resources over a network. It is primarily used in Windows, but also supported by Linux (via Samba) and macOS.",
+        "tags": ["Network Security", "Penetration Testing", "Ethical Hacking","Red Team"],
+        "image": "assets/images/SMB.png",
+        "author": "HamidReza Mohseniyan",
+        "read_time": "6 minutes"
+        
     }
 ]
